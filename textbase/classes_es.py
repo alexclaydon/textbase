@@ -1,9 +1,6 @@
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Document, Date, Integer, Keyword, Text
 
-
-es = Elasticsearch(hosts='192.168.2.100')
-
 # Define a custom class based on Document
 
 

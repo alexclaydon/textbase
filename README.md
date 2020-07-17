@@ -1,4 +1,4 @@
-# instabase
+# textbase
 
 Export an HTML file of your Instapaper articles, then using the URLs stored therein download the full text and store it - along with metadata - in a local SQLite database.
 

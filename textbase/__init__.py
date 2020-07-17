@@ -1,2 +1,2 @@
 # __init__.py
-from .app import Instabase
+from .app import Textbase

@@ -1,5 +1,3 @@
-# TODO: NB This was moved from link_queue.py; it hasn't yet been suitably refactored or tested.
-
 from pathlib import Path
 import nltk
 

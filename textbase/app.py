@@ -37,7 +37,7 @@ SAFARI_EXPORT_FILE = EXPORT_PATH / 'Bookmarks.plist'
 TODOIST_TOKEN = os.getenv("TODOIST_TOKEN")
 
 
-class Instabase:
+class Textbase:
 
     @staticmethod
     def run():
