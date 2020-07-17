@@ -1,0 +1,10 @@
+output: es
+
+# 'es' for writing output to Elasticsearch instance, 'db' for PostgreSQL
+
+instapaper:
+  user:
+  pass:
+
+todoist:
+  token:

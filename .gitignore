@@ -1,0 +1,10 @@
+/.idea/
+/venv/
+/__pycache__/
+.DS_Store
+geckodriver.log
+/textbase/config.yml
+/textbase/resources/db
+/textbase/resources/logs
+/textbase/resources/nltk_data
+/textbase/resources/source
