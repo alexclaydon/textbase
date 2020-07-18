@@ -59,10 +59,10 @@ class Textbase:
             target=INSTAPAPER_EXPORT_FILE
         )
 
-        # export_link_list_from_todoist(
-        #     todoist_token=TODOIST_TOKEN,
-        #     target=TODOIST_EXPORT_FILE
-        # )
+        export_link_list_from_todoist(
+            todoist_token=TODOIST_TOKEN,
+            target=TODOIST_EXPORT_FILE
+        )
 
         link_queue = Queue()
         import_instapaper_links(
