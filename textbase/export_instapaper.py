@@ -28,7 +28,7 @@ def export_link_list_from_instapaper(
 def config_firefox_driver(download_dir: Path):
     try:
         options = webdriver.firefox.options.Options()
-        options.headless = False
+        options.headless = True
         options.set_preference(
             "browser.download.folderList", 2
         )
