@@ -6,13 +6,15 @@ import nltk
 from queue import Queue
 import yaml
 
-from liblogger.legacy import local_logger
-
 from textbase.setup import setup_dirs, download_nltk_corpora
-from textbase.export_instapaper import export_link_list_from_instapaper
-from textbase.export_todoist import export_link_list_from_todoist
-from textbase.link_queue import import_instapaper_links, import_safari_links, import_todoist_links
+from textbase.api.instapaper import export_link_list_from_instapaper
+from textbase.api.todoist import export_link_list_from_todoist
+from textbase.link_queue import import_instapaper_links
 from textbase.writer import add_article_to_db, add_article_to_es
+
+# Debug flag for modifying program behaviour
+
+DEBUG_MODE = False
 
 # Paths and files
 

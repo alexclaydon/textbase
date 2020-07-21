@@ -7,3 +7,9 @@ nltk==3.5
 elasticsearch
 elasticsearch-dsl
 todoist-python
+Markdown
+pytest
+pytest-cov
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
