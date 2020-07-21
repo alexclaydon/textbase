@@ -31,6 +31,18 @@ es = Elasticsearch(hosts='192.168.2.100')
 ESArticle.init()
 
 
+def get_existing_articles_from_es():
+    pass
+
+
+def get_existing_articles_from_pg():
+    pass
+
+
+def dedupe_sets(new_link_set: set, existing_link_set: set):
+    return new_link_set.difference(existing_link_set)
+
+
 def _return_article_from_queue(link_queue: Queue):
     url = link_queue.get()
     # if _check_url_exist(url):
@@ -45,12 +57,12 @@ def _return_article_from_queue(link_queue: Queue):
 #TODO: More advanced error handling for _return_article_from_queue(); namely, should keep and present to the user a list of failed downloads generally, and keep an ignore list of 404 failures specifically.
 
 
-def _check_url_exist(url):
-    q = session.query(DBArticle).filter(
-        DBArticle.url == url)
-    for item in session.query(q.exists()):
-        if 'True' in str(item):
-            return True
+# def _check_url_exist(url):
+#     q = session.query(DBArticle).filter(
+#         DBArticle.url == url)
+#     for item in session.query(q.exists()):
+#         if 'True' in str(item):
+#             return True
 
 
 def add_article_to_db(link_queue: Queue):
