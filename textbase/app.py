@@ -9,12 +9,16 @@ import yaml
 from textbase.setup import setup_dirs, download_nltk_corpora
 from textbase.api.instapaper import export_link_list_from_instapaper
 from textbase.api.todoist import export_link_list_from_todoist
-from textbase.link_queue import import_instapaper_links
-from textbase.writer import add_article_to_db, add_article_to_es
+from textbase.api.safari import export_link_list_from_safari
+from textbase.url_processor import add_safari_urls_to_set_object, add_instapaper_urls_to_set_object, add_todoist_urls_to_set_object
+from textbase.article_writer import get_existing_articles_from_es, get_existing_articles_from_pg, dedupe_sets, add_article_to_db, add_article_to_es
 
 # Debug flag for modifying program behaviour
 
-DEBUG_MODE = False
+if os.getenv("TEXTBASE_DEBUG_MODE"):
+    DEBUG_MODE = os.getenv("TEXTBASE_DEBUG_MODE")
+else:
+    DEBUG_MODE = True
 
 # Paths and files
 
@@ -55,34 +59,47 @@ class Textbase:
         if not Path.exists(TODOIST_EXPORT_FILE):
             Path.touch(TODOIST_EXPORT_FILE)
 
+        # export_link_list_from_safari()
         export_link_list_from_instapaper(
             instapaper_login=config['instapaper'],
             firefox_dl_dir=EXPORT_PATH,
             target=INSTAPAPER_EXPORT_FILE
         )
-
         export_link_list_from_todoist(
             todoist_token=TODOIST_TOKEN,
             target=TODOIST_EXPORT_FILE
         )
 
-        link_queue = Queue()
-        import_instapaper_links(
-            queue=link_queue,
-            html_file=INSTAPAPER_EXPORT_FILE
+        link_set = set()
+        # add_safari_urls_to_set_object(
+        #     bookmarks_file=SAFARI_EXPORT_FILE,
+        #     set_object=link_set
+        # )
+        add_instapaper_urls_to_set_object(
+            html_file=INSTAPAPER_EXPORT_FILE,
+            set_object=link_set
         )
-        # import_todoist_links(
-        #     queue=link_queue,
-        #     markdown_file=TODOIST_EXPORT_FILE
-        # )
-        # import_safari_links(
-        #     queue=link_queue,
-        #     bookmarks_file=SAFARI_EXPORT_FILE
-        # )
+        add_todoist_urls_to_set_object(
+            md_file=TODOIST_EXPORT_FILE,
+            set_object=link_set
+        )
 
+        link_queue = Queue()
         if config['output'] == 'es':
+            existing_links = get_existing_articles_from_es()
+            for item in dedupe_sets(
+                new_link_set=link_set,
+                existing_link_set=existing_links
+            ):
+                link_queue.put(item=item)
             while not link_queue.empty():
                 add_article_to_es(link_queue=link_queue)
         else:
+            existing_links = get_existing_articles_from_pg()
+            for item in dedupe_sets(
+                    new_link_set=link_set,
+                    existing_link_set=existing_links
+            ):
+                link_queue.put(item=item)
             while not link_queue.empty():
                 add_article_to_db(link_queue=link_queue)

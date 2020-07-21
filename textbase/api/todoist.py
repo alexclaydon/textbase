@@ -5,7 +5,8 @@ from pathlib import Path
 
 def export_link_list_from_todoist(
         todoist_token,
-        target: Path
+        target: Path,
+        debug_mode: bool = True
 ):
     api = TodoistAPI(todoist_token)
     api.sync()
@@ -17,10 +18,11 @@ def export_link_list_from_todoist(
         tasks=tasks,
         target=target
     )
-    delete_tasks_in_max_chunks(
-        api=api,
-        tasks=tasks
-    )
+    if not debug_mode:
+        delete_tasks_in_max_chunks(
+            api=api,
+            tasks=tasks
+        )
 
 
 def export_task_data_by_project(
