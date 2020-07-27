@@ -11,11 +11,11 @@ from elasticsearch_dsl import Search
 #
 # # Search all articles directly using the API
 #
-res = es.search(index="instapaper-articles", body={"query": {"match_all": {}}})
+res = es.search(index="articles", body={"query": {"match_all": {}}})
 #
 print("Got %d Hits:" % res['hits']['total']['value'])
 for hit in res['hits']['hits']:
-    print("%(title)s %(authors)s" % hit["_source"])
+    print("%(title)s %(authors)s %(url)s" % hit["_source"])
 #
 # # Search for words directly using the API
 #
@@ -26,7 +26,7 @@ for hit in res['hits']['hits']:
 #     print(hit.title)
 
 
-s = Search(using=es, index="instapaper-articles").query("match", body="raspberry pi camera")
+s = Search(using=es, index="articles").query("match", body="raspberry pi camera")
 
 response = s.execute()
 
