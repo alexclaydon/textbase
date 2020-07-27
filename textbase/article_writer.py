@@ -31,8 +31,15 @@ es = Elasticsearch(hosts='192.168.2.100')
 ESArticle.init()
 
 
+
+
+
 def get_existing_articles_from_es():
-    pass
+    res = es.search(index="articles", body={"query": {"match_all": {}}})
+    results = set()
+    for hit in res['hits']['hits']:
+        results.add(hit['_source']['url'])
+    return results
 
 
 def get_existing_articles_from_pg():
