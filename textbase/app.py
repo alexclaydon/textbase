@@ -79,10 +79,10 @@ class Textbase:
             html_file=INSTAPAPER_EXPORT_FILE,
             set_object=link_set
         )
-        add_todoist_urls_to_set_object(
-            md_file=TODOIST_EXPORT_FILE,
-            set_object=link_set
-        )
+        # add_todoist_urls_to_set_object(
+        #     md_file=TODOIST_EXPORT_FILE,
+        #     set_object=link_set
+        # )
 
         link_queue = Queue()
         if config['output'] == 'es':
