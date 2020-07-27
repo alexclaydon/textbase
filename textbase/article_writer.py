@@ -1,4 +1,6 @@
+from liblogger.legacy import local_logger
 from newspaper import Article
+from newspaper.article import ArticleException
 from queue import Queue
 
 from sqlalchemy import create_engine
@@ -31,9 +33,6 @@ es = Elasticsearch(hosts='192.168.2.100')
 ESArticle.init()
 
 
-
-
-
 def get_existing_articles_from_es():
     res = es.search(index="articles", body={"query": {"match_all": {}}})
     results = set()
@@ -52,12 +51,14 @@ def dedupe_sets(new_link_set: set, existing_link_set: set):
 
 def _return_article_from_queue(link_queue: Queue):
     url = link_queue.get()
-    # if _check_url_exist(url):
-    #     return None
     article = Article(url, keep_article_html=True)
-    article.download()
-    article.parse()
-    article.nlp()
+    try:
+        article.download()
+        article.parse()
+        article.nlp()
+    except ArticleException as e:
+        local_logger.warning(msg=e)
+        return None
     return article
 
 
@@ -97,12 +98,9 @@ def add_article_to_es(link_queue: Queue):
     article = _return_article_from_queue(link_queue)
     if article is not None:
         esarticle = ESArticle(
-            # meta={'id': 42},
             url=article.url,
             title=article.title,
             authors=str(article.authors),
             body=article.text,
-            # tags=['test'],
         )
-        # esarticle.published_from = datetime.now()
         esarticle.save()

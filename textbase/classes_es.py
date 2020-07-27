@@ -1,7 +1,7 @@
 from elasticsearch import Elasticsearch
-from elasticsearch_dsl import Document, Date, Integer, Keyword, Text
+from elasticsearch_dsl import Document, Integer, Keyword, Text
 
-# Define a custom class based on Document
+# Define a subclass based on elasticsearch.Document
 
 
 class ESArticle(Document):
@@ -12,19 +12,14 @@ class ESArticle(Document):
     title = Text(analyzer='snowball', fields={'raw': Keyword()})
     authors = Text()
     body = Text(analyzer='snowball')
-    # tags = Keyword()
-    # published_from = Date()
     lines = Integer()
 
     class Index:
-        name = 'instapaper-articles'
-        # settings = {
-        #     "number_of_shards": 1,
-        # }
+        name = 'articles'
+        settings = {
+            "number_of_shards": 2,
+        }
 
     def save(self, ** kwargs):
         self.lines = len(self.body.split())
         return super(ESArticle, self).save(** kwargs)
-    #
-    # def is_published(self):
-    #     return datetime.now() > self.published_from
