@@ -7,11 +7,13 @@ from queue import Queue
 import yaml
 
 from textbase.setup import setup_dirs, download_nltk_corpora
+from textbase.functions import dedupe_sets, write_iterable_to_file
 from textbase.api.instapaper import export_link_list_from_instapaper
 from textbase.api.todoist import export_link_list_from_todoist
-from textbase.api.safari import export_link_list_from_safari
-from textbase.url_processor import add_safari_urls_to_set_object, add_instapaper_urls_to_set_object, add_todoist_urls_to_set_object
-from textbase.article_writer import get_existing_articles_from_es, get_existing_articles_from_pg, dedupe_sets, add_article_to_db, add_article_to_es
+from textbase.api.pg_api import get_all_existing_articles_from_pg
+from textbase.api.es_api import new_get_all_existing_urls_from_es, search_existing_articles_for_text
+from textbase.url_processor import add_instapaper_urls_to_set_object
+from textbase.article_writer import add_article_to_db, add_article_to_es
 
 # Debug flag for modifying program behaviour
 
@@ -33,10 +35,15 @@ DB_PATH = RESOURCES_PATH / 'db'
 LOGS_PATH = RESOURCES_PATH / 'logs'
 EXPORT_PATH = RESOURCES_PATH / 'source'
 NLTK_CORPUS_PATH = RESOURCES_PATH / 'nltk_data'
+nltk.data.path.append(NLTK_CORPUS_PATH.as_posix())
 
+IGNORE_LINKS_FILE = EXPORT_PATH / 'ignore-links.txt'
 TODOIST_EXPORT_FILE = EXPORT_PATH / 'todoist-export.md'
 INSTAPAPER_EXPORT_FILE = EXPORT_PATH / 'instapaper-export.html'
 SAFARI_EXPORT_FILE = EXPORT_PATH / 'Bookmarks.plist'
+
+with open(file=IGNORE_LINKS_FILE.as_posix(), mode='r') as file:
+    ignore_link_set = set(file.read().splitlines())
 
 # Tokens
 
@@ -54,7 +61,6 @@ class Textbase:
         setup_dirs([DB_PATH, LOGS_PATH, EXPORT_PATH])
         if not NLTK_CORPUS_PATH.exists():
             download_nltk_corpora(NLTK_CORPUS_PATH)
-        nltk.data.path.append(NLTK_CORPUS_PATH.as_posix())
 
         if not Path.exists(TODOIST_EXPORT_FILE):
             Path.touch(TODOIST_EXPORT_FILE)
@@ -86,20 +92,26 @@ class Textbase:
 
         link_queue = Queue()
         if config['output'] == 'es':
-            existing_links = get_existing_articles_from_es()
+            existing_links = new_get_all_existing_urls_from_es()
             for item in dedupe_sets(
-                new_link_set=link_set,
-                existing_link_set=existing_links
+                new_set=link_set,
+                existing_set=existing_links.union(ignore_link_set)
             ):
                 link_queue.put(item=item)
             while not link_queue.empty():
-                add_article_to_es(link_queue=link_queue)
+                ignore_link_set.add(
+                    add_article_to_es(
+                        link_queue=link_queue
+                    )
+                )
         else:
-            existing_links = get_existing_articles_from_pg()
+            existing_links = get_all_existing_articles_from_pg()
             for item in dedupe_sets(
-                    new_link_set=link_set,
-                    existing_link_set=existing_links
+                    new_set=link_set,
+                    existing_set=existing_links
             ):
                 link_queue.put(item=item)
             while not link_queue.empty():
                 add_article_to_db(link_queue=link_queue)
+
+        write_iterable_to_file(ignore_link_set, IGNORE_LINKS_FILE)

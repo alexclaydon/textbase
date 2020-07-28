@@ -10,8 +10,8 @@ from sqlalchemy.orm import sessionmaker
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl.connections import connections
 
-from textbase.classes_pg import DBArticle
-from textbase.classes_es import ESArticle
+from textbase.api.pg_api import DBArticle
+from textbase.api.es_api import ESArticle
 
 # Setup SQLite database connection
 
@@ -33,22 +33,6 @@ es = Elasticsearch(hosts='192.168.2.100')
 ESArticle.init()
 
 
-def get_existing_articles_from_es():
-    res = es.search(index="articles", body={"query": {"match_all": {}}})
-    results = set()
-    for hit in res['hits']['hits']:
-        results.add(hit['_source']['url'])
-    return results
-
-
-def get_existing_articles_from_pg():
-    pass
-
-
-def dedupe_sets(new_link_set: set, existing_link_set: set):
-    return new_link_set.difference(existing_link_set)
-
-
 def _return_article_from_queue(link_queue: Queue):
     url = link_queue.get()
     article = Article(url, keep_article_html=True)
@@ -58,19 +42,22 @@ def _return_article_from_queue(link_queue: Queue):
         article.nlp()
     except ArticleException as e:
         local_logger.warning(msg=e)
-        return None
+        return article.url
     return article
 
 
-#TODO: More advanced error handling for _return_article_from_queue(); namely, should keep and present to the user a list of failed downloads generally, and keep an ignore list of 404 failures specifically.
-
-
-# def _check_url_exist(url):
-#     q = session.query(DBArticle).filter(
-#         DBArticle.url == url)
-#     for item in session.query(q.exists()):
-#         if 'True' in str(item):
-#             return True
+def add_article_to_es(link_queue: Queue):
+    article = _return_article_from_queue(link_queue)
+    if isinstance(article, Article):
+        esarticle = ESArticle(
+            url=article.url,
+            title=article.title,
+            authors=str(article.authors),
+            body=article.text,
+        )
+        esarticle.save()
+    if isinstance(article, str):
+        return article
 
 
 def add_article_to_db(link_queue: Queue):
@@ -92,15 +79,3 @@ def add_article_to_db(link_queue: Queue):
             )
         )
         session.commit()
-
-
-def add_article_to_es(link_queue: Queue):
-    article = _return_article_from_queue(link_queue)
-    if article is not None:
-        esarticle = ESArticle(
-            url=article.url,
-            title=article.title,
-            authors=str(article.authors),
-            body=article.text,
-        )
-        esarticle.save()
