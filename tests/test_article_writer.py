@@ -1,5 +1,4 @@
-from textbase.article_writer import dedupe_sets
-
+from textbase.functions import dedupe_sets
 
 new_links = set()
 new_links.add('asdf')
