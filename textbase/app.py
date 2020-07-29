@@ -11,7 +11,7 @@ from textbase.functions import dedupe_sets, write_iterable_to_file
 from textbase.api.instapaper import export_link_list_from_instapaper
 from textbase.api.todoist import export_link_list_from_todoist
 from textbase.api.pg_api import get_all_existing_articles_from_pg
-from textbase.api.es_api import new_get_all_existing_urls_from_es, search_existing_articles_for_text
+from textbase.api.es_api import new_get_all_existing_urls_from_es, search_existing_articles_by_text
 from textbase.url_processor import add_instapaper_urls_to_set_object
 from textbase.article_writer import add_article_to_db, add_article_to_es
 
@@ -54,17 +54,18 @@ class Textbase:
 
     @staticmethod
     def run():
-        # for file in EXPORT_PATH.iterdir():
-        #     if file.is_file() and 'insta' in file.as_posix():
-        #         file.unlink()
+        Textbase.get_article_updates()
 
+    @staticmethod
+    def get_article_updates():
+        for file in EXPORT_PATH.iterdir():
+            if file.is_file() and 'insta' in file.as_posix():
+                file.unlink()
         setup_dirs([DB_PATH, LOGS_PATH, EXPORT_PATH])
         if not NLTK_CORPUS_PATH.exists():
             download_nltk_corpora(NLTK_CORPUS_PATH)
-
         if not Path.exists(TODOIST_EXPORT_FILE):
             Path.touch(TODOIST_EXPORT_FILE)
-
         # export_link_list_from_safari()
         export_link_list_from_instapaper(
             instapaper_login=config['instapaper'],
@@ -75,7 +76,6 @@ class Textbase:
             todoist_token=TODOIST_TOKEN,
             target=TODOIST_EXPORT_FILE
         )
-
         link_set = set()
         # add_safari_urls_to_set_object(
         #     bookmarks_file=SAFARI_EXPORT_FILE,
@@ -89,13 +89,12 @@ class Textbase:
         #     md_file=TODOIST_EXPORT_FILE,
         #     set_object=link_set
         # )
-
         link_queue = Queue()
         if config['output'] == 'es':
             existing_links = new_get_all_existing_urls_from_es()
             for item in dedupe_sets(
-                new_set=link_set,
-                existing_set=existing_links.union(ignore_link_set)
+                    new_set=link_set,
+                    existing_set=existing_links.union(ignore_link_set)
             ):
                 link_queue.put(item=item)
             while not link_queue.empty():
@@ -113,5 +112,4 @@ class Textbase:
                 link_queue.put(item=item)
             while not link_queue.empty():
                 add_article_to_db(link_queue=link_queue)
-
         write_iterable_to_file(ignore_link_set, IGNORE_LINKS_FILE)
