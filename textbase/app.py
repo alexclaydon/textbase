@@ -5,6 +5,8 @@ from pathlib import Path
 import nltk
 from queue import Queue
 import yaml
+from apscheduler.schedulers.blocking import BlockingScheduler
+
 
 from textbase.setup import setup_dirs, download_nltk_corpora
 from textbase.functions import dedupe_sets, write_iterable_to_file
@@ -55,6 +57,14 @@ class Textbase:
     @staticmethod
     def run():
         Textbase.get_article_updates()
+        scheduler = BlockingScheduler()
+        scheduler.add_job(
+            Textbase.get_article_updates,
+            'interval',
+            hours=12
+        )
+        scheduler.start()
+
 
     @staticmethod
     def get_article_updates():
