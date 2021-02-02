@@ -1,4 +1,4 @@
-from liblogger.legacy import local_logger
+from .api.legacy import local_logger
 from newspaper import Article
 from newspaper.article import ArticleException
 from queue import Queue

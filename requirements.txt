@@ -8,12 +8,13 @@ elasticsearch~=7.8.0
 elasticsearch-dsl
 todoist-python~=8.1.1
 Markdown
-pytest~=5.4.3
+pytest
 pytest-cov
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
-twilio
-liblogger~=0.1
 clii
 APScheduler
+npyscreen
+pre-commit
+pylint

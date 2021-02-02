@@ -1,0 +1,21 @@
+{
+    "dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+    "workspaceFolder": "/workspace",
+    // "workspaceMount": "source=/home/alexclaydon/dev/projects/textbase/,target=/workspace,type=bind,consistency=cached",
+    
+    "settings": { 
+		"terminal.integrated.shell.linux": "/bin/bash",
+		"python.pythonPath": "/usr/local/bin/python",
+		"python.linting.enabled": true,
+		"python.linting.pylintEnabled": true,
+	},
+    
+    "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "visualstudioexptteam.vscodeintellicode",
+        "esbenp.prettier-vscode",
+        "christian-kohler.path-intellisense",
+    ],
+}

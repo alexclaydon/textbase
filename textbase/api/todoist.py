@@ -1,4 +1,4 @@
-from liblogger.legacy import local_logger
+from .legacy import local_logger
 from todoist.api import TodoistAPI
 from pathlib import Path
 

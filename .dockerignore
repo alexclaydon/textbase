@@ -1,0 +1,31 @@
+# OS
+.DS_Store
+/.un~
+
+# IDE
+.idea
+.vscode
+workspace.code-workspace
+
+# Repo
+.git
+.github
+.gitignore
+
+# Build
+docker-compose.yml
+.pre-commit-config.yaml
+setup.cfg
+Dockerfile.prod
+Dockerfile.dev
+.dockerignore
+
+# Compiled
+*.pyc
+*.pyo
+*.pyd
+venv
+pvmon/__pycache__
+
+# Logs
+geckodriver.log

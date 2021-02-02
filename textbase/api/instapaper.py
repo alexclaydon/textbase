@@ -1,8 +1,9 @@
 from pathlib import Path
 from time import sleep
 from selenium import webdriver
-from liblogger.legacy import local_logger
 import sys
+from .legacy import local_logger
+
 
 
 def export_link_list_from_instapaper(

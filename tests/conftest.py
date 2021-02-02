@@ -1,4 +1,4 @@
-from liblogger.legacy import local_logger
+from ..textbase.api.legacy import local_logger
 import pytest
 
 
