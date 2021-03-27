@@ -1,12 +1,11 @@
 {
-    "dockerComposeFile": "docker-compose.yml",
-	"service": "app",
+    "dockerFile": "../Dockerfile.dev",
     "workspaceFolder": "/workspace",
-    // "workspaceMount": "source=/home/alexclaydon/dev/projects/textbase/,target=/workspace,type=bind,consistency=cached",
+    // "workspaceMount": "source=/home/alexclaydon/dev/projects/pvmon/,target=/workspace,type=bind,consistency=cached",
     
     "settings": { 
 		"terminal.integrated.shell.linux": "/bin/bash",
-		"python.pythonPath": "/usr/local/bin/python",
+		"python.pythonPath": "/usr/bin/python3",
 		"python.linting.enabled": true,
 		"python.linting.pylintEnabled": true,
 	},
@@ -17,5 +16,6 @@
         "visualstudioexptteam.vscodeintellicode",
         "esbenp.prettier-vscode",
         "christian-kohler.path-intellisense",
+        "alexcvzz.vscode-sqlite"
     ],
 }

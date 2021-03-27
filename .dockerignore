@@ -25,7 +25,17 @@ Dockerfile.dev
 *.pyo
 *.pyd
 venv
-pvmon/__pycache__
+/__pycache__
 
 # Logs
 geckodriver.log
+
+# Tests
+/tests/
+
+# Artefacts
+/textbase/config.yml
+/textbase/resources/db
+/textbase/resources/logs
+/textbase/resources/nltk_data
+/textbase/resources/source
