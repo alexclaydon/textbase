@@ -1,3 +1,5 @@
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+
 # textbase
 
 Export an HTML file of your Instapaper articles, then using the URLs stored therein download the full text and store it - along with metadata - in a local SQLite database.
